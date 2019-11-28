@@ -1,7 +1,11 @@
 package spark.streaming.structured.i_TwitterStreaming
 
+import java.text.SimpleDateFormat
+import java.util.Calendar
+
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{explode, split}
+import org.apache.spark.sql.functions.{explode, split, udf,window}
+import org.apache.spark.sql.types.{StringType, StructField, StructType}
 
 /*
 * Author : Prudhvi Akella.
@@ -18,10 +22,11 @@ object b_SparkTwitterSocketStream extends App {
   println(host+" "+port)
   System.setProperty("hadoop.home.dir", "D:\\spark")
   //Creating spark session object to create socket stream
-  val spark = SparkSession.builder()
+  val spark = SparkSession.builder
     .appName("SparkTwitterSocketStreaming")
     .master("local")
     .getOrCreate();
+  spark.sparkContext.setLogLevel("ERROR")
   //Creating socket stream
   val lines = spark.readStream
     .format("socket")
@@ -29,13 +34,28 @@ object b_SparkTwitterSocketStream extends App {
     .option("port",port)
     .option("includeTimestamp",true)
     .load()
-  //
+
+  lines.printSchema()
   import spark.implicits._
   val words = lines.select(explode(split($"value"," ")).as("word"),$"timestamp")
+  val extract_tags_udf = udf((word:String)=>{
+    if(word.toLowerCase.startsWith("@")){
+      word
+    } else{
+      "nonTag"
+   }
+  },StringType)
+  val resultDF = words.withColumn("tags",extract_tags_udf($"word"))
+  val windowHashTagCounts = resultDF
+    .where($"tags".notEqual("nonTag"))
+    .groupBy(window($"timestamp","50 seconds","30 seconds"),$"tags")
+    .count()
+    .orderBy($"count".desc)
 
-  val query = words.writeStream
+  val query = windowHashTagCounts.writeStream
+    .outputMode("complete")
     .format("console")
-    .outputMode("append")
+    .option("truncate",false)
     .start()
 
   query.awaitTermination()
