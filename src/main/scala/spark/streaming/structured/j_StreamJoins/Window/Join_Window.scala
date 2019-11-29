@@ -1,21 +1,18 @@
 package spark.streaming.structured.j_StreamJoins.Window
 
-import java.text.SimpleDateFormat
-import java.util.Calendar
-
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{udf,window,avg}
-import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import spark.streaming.structured.j_StreamJoins.c_JoinAggregations_Rating.{add_age_group_udf, joinedDF}
-
-
-
 /*
 *Author : Prudhvi Akella.
 * Desc : If you want to extract insights about how you your customers spend you want the average transaction amount
 * information of your customers split by age group but a certain intervals of time.which means you need to use
 * windows
  */
+import java.text.SimpleDateFormat
+import java.util.Calendar
+
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions.{udf,window,avg}
+import org.apache.spark.sql.types.{StringType, StructField, StructType}
+
 object Join_Window extends App {
   //Batch Data : For batch data refer to datasets\customerDatasets\static_datasets
   //batch data consists of customer specific info lets assume we have a store  for every customer we have a
