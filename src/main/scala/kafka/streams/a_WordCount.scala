@@ -65,7 +65,9 @@ object a_WordCount extends App{
   * if value > 2 it goes into one branch that is branch(2)
   * else records will be dropped.
    */
-  val branches = wordCounts.toStream.branch((key,value)=>value>100,
+  val branches = wordCounts
+    .toStream
+    .branch((key,value)=>value>100,
     (key,value)=>value>10,
     (key,value)=>value>2)
 
