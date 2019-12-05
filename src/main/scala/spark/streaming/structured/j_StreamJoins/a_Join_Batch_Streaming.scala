@@ -44,7 +44,7 @@ object a_Join_Batch_Streaming extends App {
       StructField("Transaction_Rating", StringType, nullable = true)
     )
   )
-  /*Every file of customer transactions new file will be triggered*/
+  /*Every file of customer transactions new batch will be triggered*/
   val TranscationStream = spark
     .readStream.option("header","true")
     .option("maxFilesPerTrigger",1)

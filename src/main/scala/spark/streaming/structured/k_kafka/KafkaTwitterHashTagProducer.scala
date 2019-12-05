@@ -8,10 +8,10 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.scala.StreamsBuilder
 import org.apache.kafka.streams.scala.kstream._
 import org.apache.kafka.streams.{KafkaStreams, StreamsConfig}
+import org.apache.kafka.streams.scala.Serdes._
+import org.apache.kafka.streams.scala.ImplicitConversions._
 
 object KafkaTwitterHashTagProducer extends App {
-  import org.apache.kafka.streams.scala.Serdes._
-  import org.apache.kafka.streams.scala.ImplicitConversions._
 
   val config: Properties = {
     val properties = new Properties()
